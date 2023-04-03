@@ -71,7 +71,7 @@ Combination of `cloudfront:setup` and `cloudfront:build:deploy` commands with or
 Remove an entire stack configured in `serverless.yml` via CloudFormation.
 ### `s3 URL`
 
-https://react-store-app.s3.eu-west-1.amazonaws.com/index.html
+http://react-store-app.s3-website-eu-west-1.amazonaws.com
 
 ### `CloudFront URL`
 
