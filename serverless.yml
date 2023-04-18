@@ -93,8 +93,8 @@ resources:
               ResponseCode: 200
               ResponsePagePath: /index.html
           DefaultCacheBehavior:
-            AllowedMethods: ["GET", "HEAD", "OPTIONS"]
-            CachedMethods: ["GET", "HEAD", "OPTIONS"]
+            AllowedMethods: ["GET", "HEAD", "PUT", "OPTIONS"]
+            CachedMethods: ["GET", "HEAD", "PUT", "OPTIONS"]
             ForwardedValues:
               Headers:
                 - Access-Control-Request-Headers

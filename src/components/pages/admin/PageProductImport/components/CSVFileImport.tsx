@@ -1,5 +1,6 @@
 import React from "react";
 import Typography from "@mui/material/Typography";
+import axios from "axios";
 import Box from "@mui/material/Box";
 
 type CSVFileImportProps = {
@@ -22,26 +23,31 @@ export default function CSVFileImport({ url, title }: CSVFileImportProps) {
     setFile(undefined);
   };
 
-  const uploadFile = async () => {
+  const uploadFile = async (f: File) => {
     console.log("uploadFile to", url);
 
     // Get the presigned URL
-    // const response = await axios({
-    //   method: "GET",
-    //   url,
-    //   params: {
-    //     name: encodeURIComponent(file.name),
-    //   },
-    // });
-    // console.log("File to upload: ", file.name);
-    // console.log("Uploading to: ", response.data);
-    // const result = await fetch(response.data, {
-    //   method: "PUT",
-    //   body: file,
-    // });
-    // console.log("Result: ", result);
-    // setFile("");
+    const response = await axios({
+      method: "GET",
+      url,
+      params: {
+        name: encodeURIComponent(f.name),
+      },
+    });
+    console.log("File to upload: ", f.name);
+    console.log("Uploading to: ", response.data);
+    console.log(f);
+    try {
+      const result = await fetch(response.data, {
+        method: "PUT",
+        body: f,
+      });
+      console.log("Result: ", result);
+    } catch (e) {
+      console.log(e);
+    }
   };
+
   return (
     <Box>
       <Typography variant="h6" gutterBottom>
@@ -52,7 +58,14 @@ export default function CSVFileImport({ url, title }: CSVFileImportProps) {
       ) : (
         <div>
           <button onClick={removeFile}>Remove file</button>
-          <button onClick={uploadFile}>Upload file</button>
+          <button
+            onClick={() => {
+              uploadFile(file);
+              setFile(undefined);
+            }}
+          >
+            Upload file
+          </button>
         </div>
       )}
     </Box>
