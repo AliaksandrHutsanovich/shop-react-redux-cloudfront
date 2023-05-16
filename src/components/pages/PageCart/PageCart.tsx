@@ -12,6 +12,8 @@ import Box from "@mui/material/Box";
 import { useCart, useInvalidateCart } from "~/queries/cart";
 import AddressForm from "~/components/pages/PageCart/components/AddressForm";
 import { useSubmitOrder } from "~/queries/orders";
+import { useAvailableProducts } from "~/queries/products";
+import { CartItem } from "~/models/CartItem";
 
 enum CartStep {
   ReviewCart,
@@ -43,7 +45,8 @@ const Success = () => (
 const steps = ["Review your cart", "Shipping address", "Review your order"];
 
 export default function PageCart() {
-  const { data = [] } = useCart();
+  const { data: products = [] } = useAvailableProducts();
+  const { data = { cart: { items: [] } } } = useCart();
   const { mutate: submitOrder } = useSubmitOrder();
   const invalidateCart = useInvalidateCart();
   const [activeStep, setActiveStep] = React.useState<CartStep>(
@@ -51,7 +54,7 @@ export default function PageCart() {
   );
   const [address, setAddress] = useState<Address>(initialAddressValues);
 
-  const isCartEmpty = data.length === 0;
+  const isCartEmpty = data.cart.items.length === 0;
 
   const handleNext = () => {
     if (activeStep !== CartStep.ReviewOrder) {
@@ -59,14 +62,17 @@ export default function PageCart() {
       return;
     }
     const values = {
-      items: data.map((i) => ({
-        productId: i.product.id,
-        count: i.count,
-      })),
-      address,
+      payment: {
+        type: 'by cart',
+      },
+      delivery: {
+        type: 'courier',
+        address: address.address, 
+      },
+      comments: address.comment,
     };
 
-    submitOrder(values as Omit<Order, "id">, {
+    submitOrder(values, {
       onSuccess: () => {
         setActiveStep(activeStep + 1);
         invalidateCart();
@@ -100,7 +106,11 @@ export default function PageCart() {
       </Stepper>
       {isCartEmpty && <CartIsEmpty />}
       {!isCartEmpty && activeStep === CartStep.ReviewCart && (
-        <ReviewCart items={data} />
+        <ReviewCart 
+          items={data.cart.items.map(
+            (item) => ({ ...item, product: products.find(product => product.id === item.productId) })
+          ) as CartItem[]}
+        />
       )}
       {activeStep === CartStep.Address && (
         <AddressForm
@@ -110,7 +120,9 @@ export default function PageCart() {
         />
       )}
       {activeStep === CartStep.ReviewOrder && (
-        <ReviewOrder address={address} items={data} />
+        <ReviewOrder address={address} items={data.cart.items.map(
+          (item) => ({ ...item, product: products.find(product => product.id === item.productId) })
+        ) as CartItem[]} />
       )}
       {activeStep === CartStep.Success && <Success />}
       {!isCartEmpty &&

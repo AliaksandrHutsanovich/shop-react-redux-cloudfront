@@ -33,11 +33,22 @@ export function useUpdateOrderStatus() {
   );
 }
 
+export type Values = {
+  payment: {
+    type: string;
+  };
+  delivery: {
+    type: string;
+    address: string;
+  };
+  comments: string;
+};
+
 export function useSubmitOrder() {
-  return useMutation((values: Omit<Order, "id">) => {
-    return axios.put<Omit<Order, "id">>(`${API_PATHS.order}/order`, values, {
+  return useMutation((values: Values) => {
+    return axios.post<Values>(`${API_PATHS.order}/api/profile/cart/checkout`, values, {
       headers: {
-        Authorization: `Basic ${localStorage.getItem("authorization_token")}`,
+        Authorization: `Basic V2VpZGVyOndlaWRlcjEyMzQ=`,
       },
     });
   });
