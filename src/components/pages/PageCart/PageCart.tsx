@@ -105,7 +105,7 @@ export default function PageCart() {
         ))}
       </Stepper>
       {isCartEmpty && <CartIsEmpty />}
-      {!isCartEmpty && activeStep === CartStep.ReviewCart && (
+      {!isCartEmpty && activeStep === CartStep.ReviewCart && products.length && (
         <ReviewCart 
           items={data.cart.items.map(
             (item) => ({ ...item, product: products.find(product => product.id === item.productId) })
@@ -119,7 +119,7 @@ export default function PageCart() {
           onSubmit={handleAddressSubmit}
         />
       )}
-      {activeStep === CartStep.ReviewOrder && (
+      {activeStep === CartStep.ReviewOrder && products.length && (
         <ReviewOrder address={address} items={data.cart.items.map(
           (item) => ({ ...item, product: products.find(product => product.id === item.productId) })
         ) as CartItem[]} />
